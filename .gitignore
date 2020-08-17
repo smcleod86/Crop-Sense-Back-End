@@ -1,0 +1,4 @@
+.env
+NODE_MODULES
+package-lock.json
+yarn-lock.json
