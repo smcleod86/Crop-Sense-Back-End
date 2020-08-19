@@ -1,48 +1,42 @@
-require('dotenv').config()
-const express = require('express')
-const mongoose = require('mongoose')
-const passport = require('passport')
-const bodyParser = require('body-parser')
+require("dotenv").config()
+const express = require('express');
+const mongoose = require('mongoose');
+const passport = require('passport');
+const port = process.env.PORT || 5000;
+const cors = require('cors')
 
-// initialize Express server
-const app = express()
+// Require Routes
+const users = require('./routes/api/users');
 
-// require router
-const users = require('./routes/api/users')
+// Init App
+const app = express();
 
-// middleware to CORS requests
-app.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*')
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
-    res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE')
-    next()
-})
+// Cors Middleware
+app.use(cors())
 
-// bodyParser middleware
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+// BodyParser Middleware
+app.use(express.urlencoded({extended: false}));
+app.use(express.json());
 
-// config our db
+// DB Config
 const db = process.env.MONGODB_URI
 
-// connect to MongoDB (using Atlas)
+// Connect to MongoDB (using mLab)
 mongoose.connect(db)
-    .then((() => console.log('Mongodb connected... 🥭🥭🥭🥭🥭')))
-    .catch(err => console.log(err))
+    .then((() => console.log('MongoDB connected...')))
+    .catch(err => console.log(err));
 
-// test routing
-app.get('/', function(req, res) {
-    res.send('Hello Worlds!\n Server is up and running 🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️')
-})
+// Test Route
+app.get('/', (req, res) => res.send('Hello World...'));
 
-// passport middleware
-app.use(passport.initialize())
+// Passport Middleware
+app.use(passport.initialize());
 
-// passport JWT token set/config
-require('./config/passport')(passport)
+// Passport JWT Config
+require('./config/passport')(passport);
 
-// setup our routes
-app.use('/api/users', users)
+// Use Routes
+app.use('/api/users', users);
 
-// start our server
-app.listen(process.env.PORT || 5000, () => console.log(`Server is running on ${process.env.PORT} and que bueno`))
+// Start Server
+app.listen(port, () => console.log(`Servers running on port ${port}`));
